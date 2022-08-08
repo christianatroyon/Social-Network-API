@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, Types } = require('mongoose');
 
 // Schema to create User model
 const userSchema = new Schema(
@@ -7,29 +7,31 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-
-
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      //need validation
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
     },
     // thoughts - Array of _id values referencing the Thought model
-    // thoughts: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Thought',
-    //   },
-    // ],
+    thoughts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Thought',
+      },
+    ],
     // friends - Array of _id values referencing the User model (self-reference)
-    // friends: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'User',
-    //   },
-    // ],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: {
@@ -40,10 +42,7 @@ const userSchema = new Schema(
 );
 
 // Create a virtual property `friendCount` that gets the amount of friends per user
-userSchema
-  .virtual('friendCount')
-  // Getter
-  .get(function () {
+userSchema.virtual('friendCount').get(function () {
     return this.friends.length;
   });
 
