@@ -1,5 +1,22 @@
 const { Schema, Types, model} = require('mongoose');
 
+const reactionSchema = new Schema({
+  username: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  reactionID: {
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId(),
+     },
+  reactionBody: { type: String, required: true, maxlength: 280}
+},
+{
+  toJSON: {
+    getters: true,
+  },
+  id: false,
+}
+);
+
 const thoughtSchema = new Schema(
   {
     thoughtText: {
@@ -26,22 +43,6 @@ const thoughtSchema = new Schema(
   }
 );
 
-const reactionSchema = new Schema({
-    username: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    reactionID: {
-        type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId(),
-       },
-    reactionBody: { type: String, required: true, maxlength: 280}
-  },
-  {
-    toJSON: {
-      getters: true,
-    },
-    id: false,
-  }
-  );
 
 thoughtSchema.virtual('reactionCount')
 .get(function() {
